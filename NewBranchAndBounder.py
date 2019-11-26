@@ -56,9 +56,9 @@ class NewBranchAndBounder:
                 mini = min(filtered_col)
                 value += mini
                 # Jeżeli sprawdzam kolumny po kolei, to wiem że zawsze będe podmieniał za element i-ty w wierszu
-                for j in column:
-                    if matrix[column.index(j)][i] != 'X':
-                        matrix[column.index(j)][i] -= mini
+                for j in range(len(matrix)):
+                    if matrix[j][i] != 'X':
+                        matrix[j][i] -= mini
         return value
 
     def get_column(self, colnum, matrix, use_self=False):

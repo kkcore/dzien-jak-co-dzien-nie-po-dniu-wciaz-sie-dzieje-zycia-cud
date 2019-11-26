@@ -44,7 +44,7 @@ class MatrixCreator:
         for i in range(size):
             matrix.append([])
             for j in range(size):
-                matrix[i].append(random.randrange(0,50))
+                matrix[i].append(random.randrange(0,10))
         self.set_loops_to_infinity(matrix)
         return matrix
 

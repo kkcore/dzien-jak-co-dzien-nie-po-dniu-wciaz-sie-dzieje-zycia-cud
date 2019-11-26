@@ -131,8 +131,9 @@ class NewBranchAndBounder:
         # Stworzenie pierwszego noda, który będzie rozwijany, zawsze to będzie zero
         node = LiveNode([0], cost, self.copy_matrix(self.matrix))
         live_nodes.append(node)
+        last_best_node = LiveNode(['x'],float('inf'),[])
         # Główna pętla iterująca po kolejnych nodahc
-        while self.get_longest_route_size(NodeHelper.get_routes(live_nodes)) != len(self.matrix):
+        while True:
             routes = self.get_routes_to_check(node.route)
             for i in routes:
                 route_cost = self.matrix[i[-2]][i[-1]]
@@ -145,6 +146,10 @@ class NewBranchAndBounder:
                 live_nodes.append(newlv)
             live_nodes.remove(node)
             node = NodeHelper.get_biggest_cost(live_nodes)
+            if node.cost > last_best_node.cost and len(last_best_node.route) == len(self.matrix):
+                node = last_best_node
+                break
+            last_best_node = LiveNode(node.route, node.cost, self.copy_matrix(node.matrix))
         return node
 
 

@@ -71,15 +71,12 @@ class BranchAndBounder:
         # Ustawienie ścieżek powrotnych na nieskończoność
         i = len(route) - 1
         j = len(route) - 2
-        # for i in range(len(route) - 1):
-        #     matrix_cp[route[i+1]][route[i]] = 'X'
         while i >= 0:
             while j >= 0:
                 matrix_cp[route[i]][route[j]] = 'X'
                 j -= 1
             i -= 1
             j = i - 1
-
         return matrix_cp
 
     def get_best_route(self):
@@ -89,8 +86,8 @@ class BranchAndBounder:
         while self.get_longest_route_size(live_nodes) != len(self.matrix):
             matrix_cp = []
             for i in self.matrix:
-                matrix_cp.append(i)
-            self.matrix = self.prep_matrix(route_to_extend[0])
+                matrix_cp.append(i[:])
+            matrix_cp = self.prep_matrix(route_to_extend[0])
             # Usunięcie ścieżki, która rozszerzana, żeby uniknąć rozwijania w kółko tego samego noda.
             if len(live_nodes) > 0:
                 live_nodes.remove(route_to_extend)
@@ -103,12 +100,18 @@ class BranchAndBounder:
                 route_cost = self.matrix[i[-2]][i[-1]]
                 matrix_to_calc = self.prep_matrix(i)
                 to_lower_bound = self.get_lower_bound(matrix_to_calc)
-                # if route_cost == 'X':
-                #     route_cost = 0
                 cost = from_lower_bound + route_cost + to_lower_bound
                 live_nodes.append([i, cost])
             route_to_extend = sorted(live_nodes, key=lambda x: x[1])[0]
         return route_to_extend
+    #
+    # def get_best_route2(self):
+    #     route_to_extend = [[0]]
+    #     self.matrix = self.get_lower_bound()
+    #     routes = []
+    #     while self.get_longest_route_size(live_nodes) != len(self.matrix):
+    #
+
 
 # Zwraca długość najdłuższej ścieżki
     def get_longest_route_size(self, path_list):

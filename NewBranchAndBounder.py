@@ -136,7 +136,7 @@ class NewBranchAndBounder:
         while True:
             routes = self.get_routes_to_check(node.route)
             for i in routes:
-                route_cost = self.matrix[i[-2]][i[-1]]
+                route_cost = node.matrix[i[-2]][i[-1]]
                 future_matrix = self.copy_matrix(node.matrix)
                 self.prep_matrix(i, future_matrix)
                 to_lower_bound = self.get_lower_bound(future_matrix)
@@ -144,11 +144,11 @@ class NewBranchAndBounder:
                 cost = from_lower_bound + route_cost + to_lower_bound
                 newlv = LiveNode(i, cost, self.copy_matrix(future_matrix))
                 live_nodes.append(newlv)
-            live_nodes.remove(node)
+            if len(node.route) != len(self.matrix):
+                live_nodes.remove(node)
             node = NodeHelper.get_biggest_cost(live_nodes)
-            if node.cost > last_best_node.cost and len(last_best_node.route) == len(self.matrix):
-                node = last_best_node
-                break
+            if node.route == last_best_node.route:
+                return node
             last_best_node = LiveNode(node.route, node.cost, self.copy_matrix(node.matrix))
         return node
 

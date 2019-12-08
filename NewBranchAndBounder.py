@@ -7,6 +7,7 @@ class LiveNode:
 
 
 class NodeHelper:
+    # Metoda zwracająca listę ze wszystkimi ścieżkami w livenodes
     @staticmethod
     def get_routes(live_nodes):
         routes = [node.route for node in live_nodes]
@@ -35,11 +36,12 @@ class NewBranchAndBounder:
             filtered_row = list(filter(lambda x: (x != 'X'), row))
             if len(filtered_row) > 0:
                 mini = min(filtered_row)
-                value += mini
-                for i in range(len(row)):
-                    if row[i] != 'X':
-                        row[i] -= mini
-                # row[row.index(mini)] = 0
+                if mini != 0:
+                    value += mini
+                    for i in range(len(row)):
+                        if row[i] != 'X':
+                            row[i] -= mini
+                    # row[row.index(mini)] = 0
         return value
 
     def reduce_column(self, matrix,  use_self=False):
@@ -54,11 +56,12 @@ class NewBranchAndBounder:
             filtered_col = list(filter(lambda x: (x != 'X'), column))
             if len(filtered_col) > 0:
                 mini = min(filtered_col)
-                value += mini
-                # Jeżeli sprawdzam kolumny po kolei, to wiem że zawsze będe podmieniał za element i-ty w wierszu
-                for j in range(len(matrix)):
-                    if matrix[j][i] != 'X':
-                        matrix[j][i] -= mini
+                if mini != 0:
+                    value += mini
+                    # Jeżeli sprawdzam kolumny po kolei, to wiem że zawsze będe podmieniał za element i-ty w wierszu
+                    for j in range(len(matrix)):
+                        if matrix[j][i] != 'X':
+                            matrix[j][i] -= mini
         return value
 
     def get_column(self, colnum, matrix, use_self=False):
@@ -113,7 +116,7 @@ class NewBranchAndBounder:
         else:
             x = sorted(path_list, key=lambda y: len(y), reverse=True)
             return len(x[0])
-
+    # Funkcja zwracająca ścieżki do sprawdzenia dla kolejnego wierzchołka
     def get_routes_to_check(self, path_to_expand):
         routes = []
         matrix_length = range(len(self.matrix))
@@ -124,7 +127,7 @@ class NewBranchAndBounder:
                 path_to_expand.remove(i)
         return routes
 
-
+    # Główna funkcja zwracająca obiekt wierzchołek, który posiada koszt oraz ścieżkę
     def get_best_route(self):
         live_nodes = []
         cost = self.get_lower_bound(self.matrix)
@@ -132,7 +135,7 @@ class NewBranchAndBounder:
         node = LiveNode([0], cost, self.copy_matrix(self.matrix))
         live_nodes.append(node)
         last_best_node = LiveNode(['x'],float('inf'),[])
-        # Główna pętla iterująca po kolejnych nodahc
+        # Główna pętla iterująca po kolejnych nodach
         while True:
             routes = self.get_routes_to_check(node.route)
             for i in routes:

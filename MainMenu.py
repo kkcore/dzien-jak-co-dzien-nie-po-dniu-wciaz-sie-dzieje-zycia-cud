@@ -1,10 +1,10 @@
 from MatrixCreator import MatrixCreator
 from BruteForcer import BruteForcer
-from BranchAndBounder import BranchAndBounder
-
+from NewBranchAndBounder import NewBranchAndBounder
+from DynamicProgramming import DynamicProgrammer
 class MainMenu:
     _opening = " 1. Wczytaj dane z pliku \n 2. Wyświetl wczytane dane \n 3. Uruchom przegląd zupełny" \
-               "\n 4. Uruchom metodę podziału i ograniczeń \n 5. Uruchom programownanie dynamiczne\n" \
+               "\n 4. Uruchom metodę podziału i ograniczeń \n 5. Uruchom programowanie dynamiczne\n" \
                " 6. Wyjdź z programu"
     _data = None
     _matrix = []
@@ -28,7 +28,7 @@ class MainMenu:
                 elif x == 4:
                     cls.run_branch()
                 elif x == 5:
-                    print('Jeszcze nie zaprogramowano tej funkcji ')
+                    cls.run_dynamic()
                 elif x == 6:
                     return
                 else:
@@ -39,8 +39,20 @@ class MainMenu:
     @classmethod
     def load_data(cls):
         file_path = input('Podaj ścieżkę pliku do wczytania ' )
+        load_type = input(' 1. Wczytaj format danych z internetu\n 2. Wczytaj format prosty ')
+        try:
+            load_type = int(load_type)
+            print('\n')
+            if load_type != 1 and load_type != 2:
+                print('Wybrano złą opcję')
+                return
+        except TypeError:
+            return
         cls._creator = MatrixCreator()
-        result = cls._creator.create_matrix(file_path)
+        if load_type == 1:
+            result = cls._creator.create_matrix(file_path)
+        if load_type == 2:
+            result = cls._creator.create_matrix_new(file_path)
         if isinstance(result, list):
             cls._matrix = result
         else:
@@ -81,8 +93,18 @@ class MainMenu:
 
     @classmethod
     def run_branch(cls):
-        bab = BranchAndBounder(cls._matrix)
+        bab = NewBranchAndBounder(cls._matrix)
         x = bab.get_best_route()
-        print(x)
+        print([x.route, x.cost])
+        # algorytm modyfikuje tablice wiec przywroceine starej tablicy
+        cls._matrix = bab.og_matrix
+
+
+    @classmethod
+    def run_dynamic(cls):
+        dp = DynamicProgrammer(cls._matrix)
+        cost = dp.get_best_route(1, 0)
+        print(cost)
+
 
 MainMenu.interact()
